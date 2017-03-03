@@ -2,10 +2,12 @@ package app.project.tictactoe.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +18,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private ImageView img[][] = new ImageView[3][3];
     private TextView txtPlayer1, txtPlayer2;
+    private LinearLayout layout1, layout2;
     private int player = 0;
     private int red, green;
     private int M[][];
@@ -37,6 +40,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         txtPlayer1 = (TextView) findViewById(R.id.txt_player_1);
         txtPlayer2 = (TextView) findViewById(R.id.txt_player_2);
+
+        layout1 = (LinearLayout) findViewById(R.id.activity_main);
+        layout2 = (LinearLayout) findViewById(R.id.activity_main1);
 
         img[0][0].setOnClickListener(this);
         img[0][1].setOnClickListener(this);
@@ -126,14 +132,32 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private void gameWon(int player) {
         Toast.makeText(this, "Player " + player + " won...!", Toast.LENGTH_SHORT).show();
         if (player == 1) {
-            txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
+            //txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
         } else if (player == 2) {
-            txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
+            //txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
         }
+        newGame();
+        ;
     }
 
     private void gameDraw() {
         Toast.makeText(this, "Match Draw...!", Toast.LENGTH_SHORT).show();
+        newGame();
+    }
+
+    private void newGame() {
+
+        layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
+        layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                MainActivity.this.resetGame();
+            }
+        }, 1000);
+
     }
 
     private void swapPlayer() {
