@@ -1,9 +1,11 @@
 package app.project.tictactoe.activity;
 
+import android.Manifest;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -14,7 +16,7 @@ import android.widget.Toast;
 import app.project.tictactoe.R;
 import app.project.tictactoe.Utils.GameUtil;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView img[][] = new ImageView[3][3];
     private TextView txtPlayer1, txtPlayer2;
@@ -27,6 +29,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_SMS}, 1);
 
         img[0][0] = (ImageView) findViewById(R.id.img00);
         img[0][1] = (ImageView) findViewById(R.id.img01);
@@ -59,12 +63,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         resetGame();
         txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
         txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        resetGame();
     }
 
     @Override
