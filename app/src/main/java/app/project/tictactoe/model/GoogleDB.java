@@ -13,8 +13,9 @@ public class GoogleDB {
     private String cb;
     private String cc;
 
-    private String won = "";
-    private String player = "";
+    private String won;
+    private String player;
+    private int gameStatus;
 
     public String getAa() {
         return aa;
@@ -102,5 +103,13 @@ public class GoogleDB {
 
     public void setPlayer(String player) {
         this.player = player;
+    }
+
+    public int getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(int gameStatus) {
+        this.gameStatus = gameStatus;
     }
 }

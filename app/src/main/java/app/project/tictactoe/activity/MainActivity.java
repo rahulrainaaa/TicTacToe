@@ -1,10 +1,10 @@
 package app.project.tictactoe.activity;
 
-import android.Manifest;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView img[][] = new ImageView[3][3];
     private TextView txtPlayer1, txtPlayer2;
     private LinearLayout layout1, layout2;
+    private SharedPreferences s;
+    private String mob;
     private int player = 0;
     private int red, green;
     private int M[][];
@@ -29,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_SMS}, 1);
 
         img[0][0] = (ImageView) findViewById(R.id.img00);
         img[0][1] = (ImageView) findViewById(R.id.img01);
@@ -63,6 +63,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resetGame();
         txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
         txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
+
+        s = getSharedPreferences("cache", 0);
+        String mob = s.getString("mob", "0000000000").trim();
+
+        if (mob.contains("0000000000")) {
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mob = s.getString("mob", "0000000000").trim();
+        if (mob.contains("0000000000")) {
+            layout1.setEnabled(false);
+        } else {
+            layout1.setEnabled(true);
+        }
     }
 
     @Override
