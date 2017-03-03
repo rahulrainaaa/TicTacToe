@@ -81,7 +81,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             layout1.setEnabled(false);
         } else {
             layout1.setEnabled(true);
+
         }
+        Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
         }
         newGame();
-        ;
+
     }
 
     private void gameDraw() {
@@ -164,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void newGame() {
 
+        layout1.setEnabled(false);
         layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
         layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
         Handler handler = new Handler();
@@ -233,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtPlayer1.clearAnimation();
         txtPlayer2.clearAnimation();
 
+        layout1.setEnabled(true);
     }
 
     private int checkGame() {

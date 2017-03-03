@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.digits.sdk.android.AuthCallback;
@@ -23,9 +23,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextView textView = null;
     private SharedPreferences.Editor se = null;
-    private String mob = "0000000000";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,10 +35,9 @@ public class LoginActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE}, 1);
 
         se = getSharedPreferences("cache", 0).edit();
-        textView = (TextView) findViewById(R.id.txt_otp);
 
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(TConst.TWITTER_KEY, TConst.TWITTER_SECRET);
         Digits.Builder digitsBuilder = new Digits.Builder().withTheme(R.style.CustomDigitsTheme);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TConst.TWITTER_KEY, TConst.TWITTER_SECRET);
         Fabric.with(this, new TwitterCore(authConfig), digitsBuilder.build());
 
         DigitsAuthButton digitsButton = (DigitsAuthButton) findViewById(R.id.auth_button);
@@ -50,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 Toast.makeText(getApplicationContext(), "Authentication successful for "
                         + phoneNumber, Toast.LENGTH_LONG).show();
-                se.putString("mob", mob.trim());
+                se.putString("mob", phoneNumber.trim());
                 se.commit();
                 se = null;
                 LoginActivity.this.finish();
@@ -58,10 +55,19 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void failure(DigitsException exception) {
-                Log.d("Digits", "Sign in with Digits failure", exception);
+                Log.d("Digits", "Sign in with Digits failure:", exception);
             }
         });
-
-
     }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            Digits.getInstance().logout();
+            Toast.makeText(this, "Twitter Digit Logout.", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        super.onKeyDown(keyCode, event);
+        return true;
+    }
+
 }
