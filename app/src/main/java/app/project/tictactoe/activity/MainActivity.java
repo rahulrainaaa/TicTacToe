@@ -221,30 +221,30 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private int checkGame() {
 
         if (M[0][0] == M[1][1] && M[1][1] == M[2][2] & M[2][2] != -1) {
-            img[0][0].setBackgroundResource(R.drawable.side_nav_bar);
-            img[1][1].setBackgroundResource(R.drawable.side_nav_bar);
-            img[2][2].setBackgroundResource(R.drawable.side_nav_bar);
+            img[0][0].setBackgroundResource(R.drawable.pattern_win);
+            img[1][1].setBackgroundResource(R.drawable.pattern_win);
+            img[2][2].setBackgroundResource(R.drawable.pattern_win);
             return M[2][2] + 1; //Won
 
         } else if (M[2][0] == M[1][1] && M[1][1] == M[0][2] & M[0][2] != -1) {
-            img[2][0].setBackgroundResource(R.drawable.side_nav_bar);
-            img[1][1].setBackgroundResource(R.drawable.side_nav_bar);
-            img[0][2].setBackgroundResource(R.drawable.side_nav_bar);
+            img[2][0].setBackgroundResource(R.drawable.pattern_win);
+            img[1][1].setBackgroundResource(R.drawable.pattern_win);
+            img[0][2].setBackgroundResource(R.drawable.pattern_win);
             return M[0][2] + 1; //Won
 
         }
 
         for (int i = 0; i < 3; i++) {
             if (M[i][0] == M[i][1] && M[i][1] == M[i][2] & M[i][2] != -1) {
-                img[i][0].setBackgroundResource(R.drawable.side_nav_bar);
-                img[i][1].setBackgroundResource(R.drawable.side_nav_bar);
-                img[i][2].setBackgroundResource(R.drawable.side_nav_bar);
+                img[i][0].setBackgroundResource(R.drawable.pattern_win);
+                img[i][1].setBackgroundResource(R.drawable.pattern_win);
+                img[i][2].setBackgroundResource(R.drawable.pattern_win);
                 return M[i][2] + 1; //Won
 
             } else if (M[0][i] == M[1][i] && M[1][i] == M[2][i] & M[2][i] != -1) {
-                img[0][i].setBackgroundResource(R.drawable.side_nav_bar);
-                img[1][i].setBackgroundResource(R.drawable.side_nav_bar);
-                img[2][i].setBackgroundResource(R.drawable.side_nav_bar);
+                img[0][i].setBackgroundResource(R.drawable.pattern_win);
+                img[1][i].setBackgroundResource(R.drawable.pattern_win);
+                img[2][i].setBackgroundResource(R.drawable.pattern_win);
                 return M[2][i] + 1; // Won
             }
         }
