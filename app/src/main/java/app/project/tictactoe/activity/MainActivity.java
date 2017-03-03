@@ -36,12 +36,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout layout1, layout2;
     private SharedPreferences s;
     private String mob;
-    private int player;
+    private int player = 1;
     private int red, green;
     private int M[][];
     private FirebaseDatabase database;
     private DatabaseReference myRef;
     private GoogleDB gdb = new GoogleDB();
+    private int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +100,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mob = s.getString("mob", "0000000000").trim();
         if (mob.contains("0000000000")) {
+            Toast.makeText(this, "Please verify your mobile number.", Toast.LENGTH_SHORT).show();
             layout1.setEnabled(false);
+        } else if (flag == 2) {
+            player = 2;
+            Toast.makeText(this, "scanned", Toast.LENGTH_SHORT).show();
+        } else if (flag == 1) {
+            player = 1;
+            Toast.makeText(this, "gen and connect.", Toast.LENGTH_SHORT).show();
         } else {
             layout1.setEnabled(true);
             database = FirebaseDatabase.getInstance();
@@ -107,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             resetGame();
             myRef.addValueEventListener(this);
         }
+        flag = 0;
         Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
     }
 
@@ -121,10 +130,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case R.id.menu_action_scan:
+                flag = 2;   // Scan and connect as player 2.
                 startActivity(new Intent(this, QRScan.class));
                 break;
 
             case R.id.menu_action_gen:
+                flag = 1; // gen and act as player 1
                 Constants.mob = mob;
                 startActivity(new Intent(this, QRGen.class));
                 break;
@@ -151,35 +162,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
 
+        int mark = 1;
+        if (player == 1) {
+            mark = 0;
+        } else if (player == 2) {
+            mark = 1;
+        }
 
         switch (view.getId()) {
 
             case R.id.img00:
-                setMark(0, 0, player);
+                setMark(0, 0, mark);
                 break;
             case R.id.img01:
-                setMark(0, 1, player);
+                setMark(0, 1, mark);
                 break;
             case R.id.img02:
-                setMark(0, 2, player);
+                setMark(0, 2, mark);
                 break;
             case R.id.img10:
-                setMark(1, 0, player);
+                setMark(1, 0, mark);
                 break;
             case R.id.img11:
-                setMark(1, 1, player);
+                setMark(1, 1, mark);
                 break;
             case R.id.img12:
-                setMark(1, 2, player);
+                setMark(1, 2, mark);
                 break;
             case R.id.img20:
-                setMark(2, 0, player);
+                setMark(2, 0, mark);
                 break;
             case R.id.img21:
-                setMark(2, 1, player);
+                setMark(2, 1, mark);
                 break;
             case R.id.img22:
-                setMark(2, 2, player);
+                setMark(2, 2, mark);
                 break;
 
             default:
@@ -288,8 +305,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void resetGame() {
-
-        player = 1;
 
         gdb.setAa(-1);
         gdb.setAb(-1);
