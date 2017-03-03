@@ -6,6 +6,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -13,19 +16,30 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import app.project.tictactoe.R;
-import app.project.tictactoe.Utils.GameUtil;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import app.project.tictactoe.R;
+import app.project.tictactoe.Utils.Constants;
+import app.project.tictactoe.Utils.GameUtil;
+import app.project.tictactoe.model.GoogleDB;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
 
     private ImageView img[][] = new ImageView[3][3];
     private TextView txtPlayer1, txtPlayer2;
     private LinearLayout layout1, layout2;
     private SharedPreferences s;
     private String mob;
-    private int player = 0;
+    private int player;
     private int red, green;
     private int M[][];
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+    private GoogleDB gdb = new GoogleDB();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         red = Color.RED;
         green = Color.GREEN;
-        resetGame();
         txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
         txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
 
@@ -81,9 +94,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             layout1.setEnabled(false);
         } else {
             layout1.setEnabled(true);
-
+            database = FirebaseDatabase.getInstance();
+            myRef = database.getReferenceFromUrl("https://tictactoe-b607e.firebaseio.com/" + mob.trim());
+            resetGame();
+            myRef.addValueEventListener(this);
         }
         Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.menu_action_scan:
+                startActivity(new Intent(this, QRScan.class));
+                break;
+
+            case R.id.menu_action_gen:
+                Constants.mob = mob;
+                startActivity(new Intent(this, QRGen.class));
+                break;
+
+            default:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        gdb = dataSnapshot.getValue(GoogleDB.class);
+        Toast.makeText(this, "data change callback from google firebase DB.", Toast.LENGTH_SHORT).show();
+        parseRTDB(gdb);
+    }
+
+    @Override
+    public void onCancelled(DatabaseError error) {
+        // Failed to read value
+        Log.w("TicTacToe Google RTDB:", "Failed to read value." + error.toException());
     }
 
     @Override
@@ -128,15 +182,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void parseRTDB(GoogleDB fdb) {
+
+        img[0][0].setImageResource(GameUtil.getImgRes(fdb.getAa()));
+        img[0][1].setImageResource(GameUtil.getImgRes(fdb.getAb()));
+        img[0][2].setImageResource(GameUtil.getImgRes(fdb.getAc()));
+        img[1][0].setImageResource(GameUtil.getImgRes(fdb.getBa()));
+        img[1][1].setImageResource(GameUtil.getImgRes(fdb.getBb()));
+        img[1][2].setImageResource(GameUtil.getImgRes(fdb.getBc()));
+        img[2][0].setImageResource(GameUtil.getImgRes(fdb.getCa()));
+        img[2][1].setImageResource(GameUtil.getImgRes(fdb.getCb()));
+        img[2][2].setImageResource(GameUtil.getImgRes(fdb.getCc()));
+
+    }
+
     private void setMark(int x, int y, int mark) {
+
+        if (gdb.getPlayer() != player) {
+            return;
+        }
 
         int m = M[x][y];
         if (m == -1) {
             M[x][y] = mark;
             img[x][y].setImageResource(GameUtil.getImgRes(mark));
             int p = checkGame();
+            gdb.setWon(p);
+            reflectToRTDB();
             if (p < 0) {
-                swapPlayer();
+                // continue
             } else if (p == 0) {
                 gameDraw();
             } else {
@@ -145,7 +219,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             // Already Marked
         }
+    }
 
+    private void reflectToRTDB() {
+        if (gdb.getPlayer() == 1) {
+            gdb.setPlayer(2);
+        } else {
+            gdb.setPlayer(1);
+        }
+        gdb.setAa(M[0][0]);
+        gdb.setAb(M[0][1]);
+        gdb.setAc(M[0][2]);
+        gdb.setBa(M[1][0]);
+        gdb.setBb(M[1][1]);
+        gdb.setBc(M[1][2]);
+        gdb.setCa(M[2][0]);
+        gdb.setCb(M[2][1]);
+        gdb.setCc(M[2][2]);
+        myRef.setValue(gdb);
+        if (gdb.getPlayer() == 1) {
+            txtPlayer1.setTextColor(red);
+            txtPlayer2.setTextColor(green);
+
+        } else if (gdb.getPlayer() == 2) {
+            txtPlayer1.setTextColor(green);
+            txtPlayer2.setTextColor(red);
+        }
     }
 
     private void gameWon(int player) {
@@ -166,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void newGame() {
 
-        layout1.setEnabled(false);
+        layout1.setEnabled(true);
         layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
         layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
         Handler handler = new Handler();
@@ -180,22 +279,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void swapPlayer() {
-        if (player == 0) {
-            player = 1;
-            txtPlayer1.setTextColor(red);
-            txtPlayer2.setTextColor(green);
-
-        } else if (player == 1) {
-            player = 0;
-            txtPlayer1.setTextColor(green);
-            txtPlayer2.setTextColor(red);
-        }
-    }
-
     private void resetGame() {
 
-        player = 0;
+        player = 1;
+
+        gdb.setAa(-1);
+        gdb.setAb(-1);
+        gdb.setAc(-1);
+        gdb.setBa(-1);
+        gdb.setBb(-1);
+        gdb.setBc(-1);
+        gdb.setCa(-1);
+        gdb.setCb(-1);
+        gdb.setCc(-1); // 0=o, 1=x, -1=nil (mark on board)
+        gdb.setPlayer(1); // 1 = player1 and 2 = player 2
+        gdb.setWon(-1);  // -1 = Nothing, 0 = Draw, 1 = player 1 and 2 = player 2
+        try {
+            myRef.setValue(gdb);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Exception:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
         M = new int[][]{
                 {-1, -1, -1},
@@ -245,13 +349,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             img[0][0].setBackgroundResource(R.drawable.pattern_win);
             img[1][1].setBackgroundResource(R.drawable.pattern_win);
             img[2][2].setBackgroundResource(R.drawable.pattern_win);
-            return M[2][2] + 1; //Won
+            return M[2][2]; //Won
 
         } else if (M[2][0] == M[1][1] && M[1][1] == M[0][2] & M[0][2] != -1) {
             img[2][0].setBackgroundResource(R.drawable.pattern_win);
             img[1][1].setBackgroundResource(R.drawable.pattern_win);
             img[0][2].setBackgroundResource(R.drawable.pattern_win);
-            return M[0][2] + 1; //Won
+            return M[0][2]; //Won
 
         }
 
@@ -260,13 +364,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 img[i][0].setBackgroundResource(R.drawable.pattern_win);
                 img[i][1].setBackgroundResource(R.drawable.pattern_win);
                 img[i][2].setBackgroundResource(R.drawable.pattern_win);
-                return M[i][2] + 1; //Won
+                return M[i][2]; //Won
 
             } else if (M[0][i] == M[1][i] && M[1][i] == M[2][i] & M[2][i] != -1) {
                 img[0][i].setBackgroundResource(R.drawable.pattern_win);
                 img[1][i].setBackgroundResource(R.drawable.pattern_win);
                 img[2][i].setBackgroundResource(R.drawable.pattern_win);
-                return M[2][i] + 1; // Won
+                return M[2][i]; // Won
             }
         }
 

@@ -3,105 +3,120 @@ package app.project.tictactoe.model;
 
 public class GoogleDB {
 
-    private String aa;
-    private String ab;
-    private String ac;
-    private String ba;
-    private String bb;
-    private String bc;
-    private String ca;
-    private String cb;
-    private String cc;
+    private int aa;
+    private int ab;
+    private int ac;
+    private int ba;
+    private int bb;
+    private int bc;
+    private int ca;
+    private int cb;
+    private int cc;
 
-    private String won;
-    private String player;
+    private int won;
+    private int player;
     private int gameStatus;
 
-    public String getAa() {
+    public void setData(GoogleDB gdb) {
+        aa = gdb.aa;
+        ab = gdb.ab;
+        ac = gdb.ac;
+        ba = gdb.ba;
+        bb = gdb.bb;
+        bc = gdb.bc;
+        ca = gdb.ca;
+        cb = gdb.cb;
+        cc = gdb.cc;
+        won = gdb.won;
+        player = gdb.player;
+        gameStatus = gdb.gameStatus;
+    }
+
+    public int getAa() {
         return aa;
     }
 
-    public void setAa(String aa) {
+    public void setAa(int aa) {
         this.aa = aa;
     }
 
-    public String getAb() {
+    public int getAb() {
         return ab;
     }
 
-    public void setAb(String ab) {
+    public void setAb(int ab) {
         this.ab = ab;
     }
 
-    public String getAc() {
+    public int getAc() {
         return ac;
     }
 
-    public void setAc(String ac) {
+    public void setAc(int ac) {
         this.ac = ac;
     }
 
-    public String getBa() {
+    public int getBa() {
         return ba;
     }
 
-    public void setBa(String ba) {
+    public void setBa(int ba) {
         this.ba = ba;
     }
 
-    public String getBb() {
+    public int getBb() {
         return bb;
     }
 
-    public void setBb(String bb) {
+    public void setBb(int bb) {
         this.bb = bb;
     }
 
-    public String getBc() {
+    public int getBc() {
         return bc;
     }
 
-    public void setBc(String bc) {
+    public void setBc(int bc) {
         this.bc = bc;
     }
 
-    public String getCa() {
+    public int getCa() {
         return ca;
     }
 
-    public void setCa(String ca) {
+    public void setCa(int ca) {
         this.ca = ca;
     }
 
-    public String getCb() {
+    public int getCb() {
         return cb;
     }
 
-    public void setCb(String cb) {
+    public void setCb(int cb) {
         this.cb = cb;
     }
 
-    public String getCc() {
+    public int getCc() {
         return cc;
     }
 
-    public void setCc(String cc) {
+    public void setCc(int cc) {
         this.cc = cc;
     }
 
-    public String getWon() {
+    public int getWon() {
         return won;
     }
 
-    public void setWon(String won) {
+    public void setWon(int won) {
         this.won = won;
     }
 
-    public String getPlayer() {
+    public int getPlayer() {
         return player;
     }
 
-    public void setPlayer(String player) {
+    public void setPlayer(int player) {
         this.player = player;
     }
 

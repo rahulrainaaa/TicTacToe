@@ -26,7 +26,9 @@
             android:name="io.fabric.ApiKey"
             android:value="c2145a89891a99829b9bcf02d00279572cdefe1b" />
 
-        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.QRGen" />
+        <activity android:name=".activity.QRScan"></activity>
     </application>
 
 </manifest>
