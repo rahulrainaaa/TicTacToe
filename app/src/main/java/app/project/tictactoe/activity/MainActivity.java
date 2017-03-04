@@ -219,6 +219,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         img[2][1].setImageResource(GameUtil.getImgRes(fdb.getCb()));
         img[2][2].setImageResource(GameUtil.getImgRes(fdb.getCc()));
 
+        M[0][0] = fdb.getAa();
+        M[0][1] = fdb.getAb();
+        M[0][2] = fdb.getAc();
+        M[1][0] = fdb.getBa();
+        M[1][1] = fdb.getBb();
+        M[1][2] = fdb.getBc();
+        M[2][0] = fdb.getCa();
+        M[2][1] = fdb.getCb();
+        M[2][2] = fdb.getCc();
     }
 
     private void setMark(int x, int y, int mark) {
@@ -263,12 +272,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gdb.setCc(M[2][2]);
         myRef.setValue(gdb);
         if (gdb.getPlayer() == 1) {
-            txtPlayer1.setTextColor(red);
-            txtPlayer2.setTextColor(green);
-
-        } else if (gdb.getPlayer() == 2) {
             txtPlayer1.setTextColor(green);
             txtPlayer2.setTextColor(red);
+
+        } else if (gdb.getPlayer() == 2) {
+            txtPlayer1.setTextColor(red);
+            txtPlayer2.setTextColor(green);
         }
     }
 
