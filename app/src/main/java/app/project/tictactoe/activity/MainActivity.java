@@ -36,13 +36,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout layout1, layout2;
     private SharedPreferences s;
     private String mob;
-    private int player = 1;
+    private int player = 0;
     private int red, green;
     private int M[][];
     private FirebaseDatabase database;
     private DatabaseReference myRef;
     private GoogleDB gdb = new GoogleDB();
-    private int flag = 0;
+    private int flag = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,16 +104,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             layout1.setEnabled(false);
         } else if (flag == 2) {
             player = 2;
-            Toast.makeText(this, "scanned", Toast.LENGTH_SHORT).show();
+            flag = 0;
+            initFirebase();
+            Toast.makeText(this, "Connected as Player 2", Toast.LENGTH_SHORT).show();
         } else if (flag == 1) {
             player = 1;
-            Toast.makeText(this, "gen and connect.", Toast.LENGTH_SHORT).show();
+            flag = 0;
+            initFirebase();
+            Toast.makeText(this, "Connected as Player 1", Toast.LENGTH_SHORT).show();
         } else {
-            layout1.setEnabled(true);
-            database = FirebaseDatabase.getInstance();
-            myRef = database.getReferenceFromUrl("https://tictactoe-b607e.firebaseio.com/" + mob.trim());
-            resetGame();
-            myRef.addValueEventListener(this);
+            //initFirebase();
         }
         flag = 0;
         Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
@@ -205,6 +205,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+    }
+
+    private void initFirebase() {
+        layout1.setEnabled(true);
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReferenceFromUrl("https://tictactoe-b607e.firebaseio.com/" + mob.trim());
+        resetGame();
+        myRef.addValueEventListener(this);
     }
 
     private void parseRTDB(GoogleDB fdb) {
@@ -324,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gdb.setCa(-1);
         gdb.setCb(-1);
         gdb.setCc(-1); // 0=o, 1=x, -1=nil (mark on board)
-        gdb.setPlayer(1); // 1 = player1 and 2 = player 2
+        gdb.setPlayer(player); // 1 = player1 and 2 = player 2
         gdb.setWon(-1);  // -1 = Nothing, 0 = Draw, 1 = player 1 and 2 = player 2
         try {
             myRef.setValue(gdb);

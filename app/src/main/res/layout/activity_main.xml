@@ -28,8 +28,7 @@
                 <ImageView
                     android:id="@+id/img00"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/zero" />
+                    android:layout_height="100dp" />
 
                 <LinearLayout
                     android:layout_width="1dp"
@@ -39,8 +38,7 @@
                 <ImageView
                     android:id="@+id/img01"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/cross" />
+                    android:layout_height="100dp" />
 
                 <LinearLayout
                     android:layout_width="1dp"
@@ -50,8 +48,7 @@
                 <ImageView
                     android:id="@+id/img02"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/zero" />
+                    android:layout_height="100dp" />
 
 
             </LinearLayout>
@@ -69,8 +66,7 @@
                 <ImageView
                     android:id="@+id/img10"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/cross" />
+                    android:layout_height="100dp" />
 
                 <LinearLayout
                     android:layout_width="1dp"
@@ -80,8 +76,7 @@
                 <ImageView
                     android:id="@+id/img11"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/zero" />
+                    android:layout_height="100dp" />
 
                 <LinearLayout
                     android:layout_width="1dp"
@@ -91,8 +86,7 @@
                 <ImageView
                     android:id="@+id/img12"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/cross" />
+                    android:layout_height="100dp" />
 
 
             </LinearLayout>
@@ -110,8 +104,7 @@
                 <ImageView
                     android:id="@+id/img20"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/cross" />
+                    android:layout_height="100dp" />
 
                 <LinearLayout
                     android:layout_width="1dp"
@@ -121,8 +114,7 @@
                 <ImageView
                     android:id="@+id/img21"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/cross" />
+                    android:layout_height="100dp" />
 
                 <LinearLayout
                     android:layout_width="1dp"
@@ -132,8 +124,7 @@
                 <ImageView
                     android:id="@+id/img22"
                     android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/zero" />
+                    android:layout_height="100dp" />
 
 
             </LinearLayout>
