@@ -37,10 +37,12 @@ public class QRScan extends AppCompatActivity implements ZXingScannerView.Result
     public void handleResult(Result rawResult) {
         Toast.makeText(this, "" + rawResult.getText(), Toast.LENGTH_SHORT).show();
         Constants.friendMob = "" + rawResult.getText().toString().trim();
+        Constants.mainActivity.Player2Joined();
         finish();
+        return;
         //Toast.makeText(this, "" + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_LONG).show();
         // If you would like to resume scanning, call this method below:
-        mScannerView.resumeCameraPreview(this);
+        //mScannerView.resumeCameraPreview(this);
     }
 
 

@@ -30,6 +30,22 @@ public class QRGen extends AppCompatActivity {
         generateQR(Constants.mob);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Constants.qrGen = this;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Constants.qrGen = null;
+    }
+
+    public void closeActivityCallback() {
+        finish();
+    }
+
     /**
      * @method generateQR
      * @desc Generate QR on screen

@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseDatabase database;
     private DatabaseReference myRef;
     private GoogleDB gdb = new GoogleDB();
-    private int flag = 2;
+    private int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +97,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        Constants.mainActivity = null;
 
         mob = s.getString("mob", "0000000000").trim();
         if (mob.contains("0000000000")) {
-            Toast.makeText(this, "Please verify your mobile number.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "First, verify your mobile number.", Toast.LENGTH_SHORT).show();
             layout1.setEnabled(false);
         } else if (flag == 2) {
             player = 2;
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             initFirebase();
             Toast.makeText(this, "Connected as Player 1", Toast.LENGTH_SHORT).show();
         } else {
-            //initFirebase();
+            initFirebase();
         }
         flag = 0;
         Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
@@ -130,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case R.id.menu_action_scan:
+                Constants.mainActivity = this;  //required to write in GRTDB.
                 flag = 2;   // Scan and connect as player 2.
                 startActivity(new Intent(this, QRScan.class));
                 break;
@@ -150,6 +152,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataChange(DataSnapshot dataSnapshot) {
         gdb = dataSnapshot.getValue(GoogleDB.class);
         Toast.makeText(this, "data change callback from google firebase DB.", Toast.LENGTH_SHORT).show();
+        if (gdb.getGameStatus() == 1 && Constants.qrGen != null) {
+            gdb.setGameStatus(0); //When My (player1) QR is scanned.
+            reflectToRTDB(0);
+            Constants.qrGen.closeActivityCallback();
+            return;
+        }
         parseRTDB(gdb);
     }
 
@@ -250,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             img[x][y].setImageResource(GameUtil.getImgRes(mark));
             int p = checkGame();
             gdb.setWon(p);
-            reflectToRTDB();
+            reflectToRTDB(1);
             if (p < 0) {
                 // continue
             } else if (p == 0) {
@@ -263,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void reflectToRTDB() {
+    private void reflectToRTDB(int isUIThread) {
         if (gdb.getPlayer() == 1) {
             gdb.setPlayer(2);
         } else {
@@ -279,6 +287,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gdb.setCb(M[2][1]);
         gdb.setCc(M[2][2]);
         myRef.setValue(gdb);
+
+        if (isUIThread == 0) {
+            return; //Return if not on UI Thread.
+        }
+
         if (gdb.getPlayer() == 1) {
             txtPlayer1.setTextColor(green);
             txtPlayer2.setTextColor(red);
@@ -332,7 +345,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gdb.setCa(-1);
         gdb.setCb(-1);
         gdb.setCc(-1); // 0=o, 1=x, -1=nil (mark on board)
-        gdb.setPlayer(player); // 1 = player1 and 2 = player 2
+        if (gdb.getWon() > 0) {
+            gdb.setPlayer(gdb.getPlayer());// 1 = player1 and 2 = player 2
+        } else {
+            gdb.setPlayer(1);
+        }
         gdb.setWon(-1);  // -1 = Nothing, 0 = Draw, 1 = player 1 and 2 = player 2
         try {
             myRef.setValue(gdb);
@@ -423,5 +440,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return 0; //Draw
+    }
+
+    public void Player2Joined() {
+
+        gdb.setGameStatus(1);
+        reflectToRTDB(0);
     }
 }
