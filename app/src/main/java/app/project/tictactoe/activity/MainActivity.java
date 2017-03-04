@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DatabaseReference myRef;
     private GoogleDB gdb = new GoogleDB();
     private int flag = 0;
+    private MediaPlayer mp;
+    private MediaPlayer pwin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mob.contains("0000000000")) {
             startActivity(new Intent(this, LoginActivity.class));
         }
+        mp = MediaPlayer.create(this, R.raw.ting);
+        pwin = MediaPlayer.create(this, R.raw.newgame);
     }
 
     @Override
@@ -150,13 +155,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        Toast.makeText(this, "data change callback from google firebase DB.", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "data change callback from google firebase DB.", Toast.LENGTH_SHORT).show();
         if (gdb.getGameStatus() == 1 && Constants.qrGen != null) {
             gdb.setGameStatus(0); //When My (player1) QR is scanned.
             reflectToRTDB(0);
             Constants.qrGen.closeActivityCallback();
             return;
+        } else if (gdb.getWon() > -1) {
+            layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
+            layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
+            switch (gdb.getWon()) {
+                case 0:
+                    Toast.makeText(this, "Game Draw...!", Toast.LENGTH_SHORT).show();
+                    break;
+                case 1:
+                    Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
+                    pwin.start();
+                    break;
+                case 2:
+                    Toast.makeText(this, "Player 2 Won...!", Toast.LENGTH_SHORT).show();
+                    pwin.start();
+                    break;
+            }
         }
         parseRTDB(gdb);
     }
@@ -256,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (m == -1) {
             M[x][y] = mark;
             img[x][y].setImageResource(GameUtil.getImgRes(mark));
+            mp.start();
             int p = checkGame();
             gdb.setWon(p);
             reflectToRTDB(1);
@@ -272,11 +295,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void reflectToRTDB(int isUIThread) {
-        if (gdb.getPlayer() == 1) {
-            gdb.setPlayer(2);
-        } else {
-            gdb.setPlayer(1);
+
+        if (gdb.getWon() < 0) {
+            if (gdb.getPlayer() == 1) {
+                gdb.setPlayer(2);
+            } else {
+                gdb.setPlayer(1);
+            }
         }
+
         gdb.setAa(M[0][0]);
         gdb.setAb(M[0][1]);
         gdb.setAc(M[0][2]);
@@ -303,26 +330,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void gameWon(int player) {
-        Toast.makeText(this, "Player " + player + " won...!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Player " + player + " won...!", Toast.LENGTH_SHORT).show();
         if (player == 1) {
             //txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
         } else if (player == 2) {
             //txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
         }
+        gdb.setWon(player);
         newGame();
 
     }
 
     private void gameDraw() {
-        Toast.makeText(this, "Match Draw...!", Toast.LENGTH_SHORT).show();
+
+        gdb.setWon(0);
         newGame();
     }
 
     private void newGame() {
 
         layout1.setEnabled(true);
-        layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
-        layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
+        //layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
+        //layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -345,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gdb.setCa(-1);
         gdb.setCb(-1);
         gdb.setCc(-1); // 0=o, 1=x, -1=nil (mark on board)
-        if (gdb.getWon() > 0) {
+        if (gdb.getWon() > -1) {
             gdb.setPlayer(gdb.getPlayer());// 1 = player1 and 2 = player 2
         } else {
             gdb.setPlayer(1);
@@ -406,13 +435,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             img[0][0].setBackgroundResource(R.drawable.pattern_win);
             img[1][1].setBackgroundResource(R.drawable.pattern_win);
             img[2][2].setBackgroundResource(R.drawable.pattern_win);
-            return M[2][2]; //Won
+            return M[2][2] + 1; //Won
 
         } else if (M[2][0] == M[1][1] && M[1][1] == M[0][2] & M[0][2] != -1) {
             img[2][0].setBackgroundResource(R.drawable.pattern_win);
             img[1][1].setBackgroundResource(R.drawable.pattern_win);
             img[0][2].setBackgroundResource(R.drawable.pattern_win);
-            return M[0][2]; //Won
+            return M[0][2] + 1; //Won
 
         }
 
@@ -421,13 +450,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 img[i][0].setBackgroundResource(R.drawable.pattern_win);
                 img[i][1].setBackgroundResource(R.drawable.pattern_win);
                 img[i][2].setBackgroundResource(R.drawable.pattern_win);
-                return M[i][2]; //Won
+                return M[i][2] + 1; //Won
 
             } else if (M[0][i] == M[1][i] && M[1][i] == M[2][i] & M[2][i] != -1) {
                 img[0][i].setBackgroundResource(R.drawable.pattern_win);
                 img[1][i].setBackgroundResource(R.drawable.pattern_win);
                 img[2][i].setBackgroundResource(R.drawable.pattern_win);
-                return M[2][i]; // Won
+                return M[2][i] + 1; // Won
             }
         }
 
