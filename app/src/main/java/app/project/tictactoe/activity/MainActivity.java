@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             initFirebase();
         }
         flag = 0;
-        Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (gdb.getWon()) {
                 case 0:
                     Toast.makeText(this, "Game Draw...!", Toast.LENGTH_SHORT).show();
+
                     break;
                 case 1:
                     Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
