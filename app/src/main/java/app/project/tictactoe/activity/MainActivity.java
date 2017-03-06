@@ -58,9 +58,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         ActivityCompat.requestPermissions(this, new String[]{
-                Manifest.permission.READ_SMS,
-                Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.CAMERA}, 1);
 
         img[0][0] = (ImageView) findViewById(R.id.img00);
@@ -144,6 +141,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (item.getItemId()) {
             case R.id.menu_action_scan:
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.CAMERA}, 1);
                 Constants.mainActivity = this;  //required to write in GRTDB.
                 flag = 2;   // Scan and connect as player 2.
                 startActivity(new Intent(this, QRScan.class));
@@ -176,11 +175,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataChange(DataSnapshot dataSnapshot) {
         Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        if (gdb.getGameStatus() == 1 && Constants.qrGen != null) {
+        if (gdb.getGameStatus() == 1) {
             gdb.setGameStatus(0); //When My (player1) QR is scanned.
             reflectToRTDB(0);
-            Constants.qrGen.closeActivityCallback();
-            return;
+            if (Constants.qrGen != null) {
+                Constants.qrGen.closeActivityCallback();
+                return;
+            } else if (flag == 0) {
+                Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
+                player = 1;
+            }
+            flag = 0;
+
         } else if (gdb.getWon() > -1) {
             layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
             layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
@@ -507,11 +513,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (connect2Mob.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Enter mobile number with country code.\neg: +917988200000", Toast.LENGTH_SHORT).show();
                 } else {
-                    connect2Mob = "" + connect2Mob;
-                    Toast.makeText(MainActivity.this, "" + connect2Mob, Toast.LENGTH_SHORT).show();
+                    MainActivity.this.player = 2;
+                    Constants.friendMob = connect2Mob.trim();
+                    Player2Joined();
                 }
             }
         });
+
         alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setIcon(android.R.drawable.ic_menu_edit);
         alertDialogBuilder.setTitle("Connect via Mobile");
@@ -522,6 +530,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void Player2Joined() {
 
+        flag = 3;
+        player = 2;
         gdb.setGameStatus(1);
         reflectToRTDB(0);
     }

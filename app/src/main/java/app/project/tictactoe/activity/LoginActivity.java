@@ -30,6 +30,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        ActivityCompat.requestPermissions(this, new String[]{
+                Manifest.permission.READ_SMS,
+                Manifest.permission.RECEIVE_SMS}, 1);
+
         se = getSharedPreferences("cache", 0).edit();
 
         Digits.Builder digitsBuilder = new Digits.Builder().withTheme(R.style.CustomDigitsTheme);
