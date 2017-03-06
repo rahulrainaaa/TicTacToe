@@ -35,7 +35,7 @@ import app.project.tictactoe.Utils.Constants;
 import app.project.tictactoe.Utils.GameUtil;
 import app.project.tictactoe.model.GoogleDB;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
+public class GameActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
 
     private ImageView img[][] = new ImageView[3][3];
     private TextView txtPlayer1, txtPlayer2;
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.menu_action_scan:
                 ActivityCompat.requestPermissions(this, new String[]{
                         Manifest.permission.CAMERA}, 1);
-                Constants.mainActivity = this;  //required to write in GRTDB.
+                Constants.gameActivity = this;  //required to write in GRTDB.
                 flag = 2;   // Scan and connect as player 2.
                 startActivity(new Intent(this, QRScan.class));
                 break;
@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
 
-                MainActivity.this.resetGame();
+                GameActivity.this.resetGame();
             }
         }, 1000);
     }
@@ -517,9 +517,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //save button is clicked.
                 String connect2Mob = txtMobile.getText().toString().trim();
                 if (connect2Mob.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Enter mobile number with country code.\neg: +917988200000", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GameActivity.this, "Enter mobile number with country code.\neg: +917988200000", Toast.LENGTH_SHORT).show();
                 } else {
-                    MainActivity.this.player = 2;
+                    GameActivity.this.player = 2;
                     Constants.friendMob = connect2Mob.trim();
                     Player2Joined();
                 }
@@ -548,4 +548,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gdb.setGameStatus(1);
         reflectToRTDB(0);
     }
+
 }
