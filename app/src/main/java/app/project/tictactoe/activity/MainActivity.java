@@ -1,19 +1,23 @@
 package app.project.tictactoe.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int flag = 0;
     private MediaPlayer mp;
     private MediaPlayer pwin;
+    private Vibrator vib;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
         txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
 
+        vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         s = getSharedPreferences("cache", 0);
         String mob = s.getString("mob", "0000000000").trim();
 
@@ -102,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+
         Constants.mainActivity = null;
 
         mob = s.getString("mob", "0000000000").trim();
@@ -122,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             initFirebase();
         }
         flag = 0;
-        // Toast.makeText(this, "Login as:" + mob, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
@@ -134,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
+
         switch (item.getItemId()) {
             case R.id.menu_action_scan:
                 Constants.mainActivity = this;  //required to write in GRTDB.
@@ -143,10 +151,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.menu_action_gen:
                 flag = 1; // gen and act as player 1
+                if (mob.contains("0000000000")) {
+                    Toast.makeText(this, "Verify your mobile number first.", Toast.LENGTH_SHORT).show();
+                    break;
+                }
                 Constants.mob = mob;
                 startActivity(new Intent(this, QRGen.class));
                 break;
 
+            case R.id.menu_action_dial:
+                connectViaMob();
+                break;
+
+            case R.id.menu_action_verify:
+                startActivity(new Intent(this, LoginActivity.class));
+                break;
             default:
                 break;
         }
@@ -157,7 +176,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataChange(DataSnapshot dataSnapshot) {
         Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        // Toast.makeText(this, "data change callback from google firebase DB.", Toast.LENGTH_SHORT).show();
         if (gdb.getGameStatus() == 1 && Constants.qrGen != null) {
             gdb.setGameStatus(0); //When My (player1) QR is scanned.
             reflectToRTDB(0);
@@ -169,24 +187,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (gdb.getWon()) {
                 case 0:
                     Toast.makeText(this, "Game Draw...!", Toast.LENGTH_SHORT).show();
-
+                    vib.vibrate(100);
                     break;
                 case 1:
                     Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
+                    vib.vibrate(300);
                     pwin.start();
                     break;
                 case 2:
                     Toast.makeText(this, "Player 2 Won...!", Toast.LENGTH_SHORT).show();
+                    vib.vibrate(300);
                     pwin.start();
                     break;
             }
+        }
+
+        if (gdb.getPlayer() == 1) {
+
+            txtPlayer1.setTextColor(green);
+            txtPlayer2.setTextColor(red);
+        } else if (gdb.getPlayer() == 2) {
+
+            txtPlayer1.setTextColor(red);
+            txtPlayer2.setTextColor(green);
+        } else {
+
+            txtPlayer1.setTextColor(red);
+            txtPlayer2.setTextColor(red);
         }
         parseRTDB(gdb);
     }
 
     @Override
     public void onCancelled(DatabaseError error) {
-        // Failed to read value
         Log.w("TicTacToe Google RTDB:", "Failed to read value." + error.toException());
     }
 
@@ -229,10 +262,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.img22:
                 setMark(2, 2, mark);
                 break;
-
             default:
-
-                Toast.makeText(this, "Warning: Unhandeled OnClick Event", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Warning: Unhandled OnClick Event", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -331,12 +362,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void gameWon(int player) {
-        //Toast.makeText(this, "Player " + player + " won...!", Toast.LENGTH_SHORT).show();
-        if (player == 1) {
-            //txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
-        } else if (player == 2) {
-            //txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.win_player));
-        }
+
         gdb.setWon(player);
         newGame();
 
@@ -351,8 +377,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void newGame() {
 
         layout1.setEnabled(true);
-        //layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
-        //layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -361,7 +385,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 MainActivity.this.resetGame();
             }
         }, 1000);
-
     }
 
     private void resetGame() {
@@ -470,6 +493,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         return 0; //Draw
+    }
+
+    private void connectViaMob() {
+        final EditText txtMobile = new EditText(this);
+        txtMobile.setHint("eg: +919982100000");
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //save button is clicked.
+                String connect2Mob = txtMobile.getText().toString().trim();
+                if (connect2Mob.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Enter mobile number with country code.\neg: +917988200000", Toast.LENGTH_SHORT).show();
+                } else {
+                    connect2Mob = "" + connect2Mob;
+                    Toast.makeText(MainActivity.this, "" + connect2Mob, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        alertDialogBuilder.setCancelable(false);
+        alertDialogBuilder.setIcon(android.R.drawable.ic_menu_edit);
+        alertDialogBuilder.setTitle("Connect via Mobile");
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setView(txtMobile);
+        alertDialog.show();
     }
 
     public void Player2Joined() {
