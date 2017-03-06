@@ -12,6 +12,7 @@ import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -115,15 +116,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (flag == 2) {
             player = 2;
             flag = 0;
-            initFirebase();
+            initFirebase(Constants.friendMob);
             Toast.makeText(this, "Connected as Player 2", Toast.LENGTH_SHORT).show();
         } else if (flag == 1) {
             player = 1;
             flag = 0;
-            initFirebase();
+            initFirebase(mob);
             Toast.makeText(this, "Connected as Player 1", Toast.LENGTH_SHORT).show();
         } else {
-            initFirebase();
+            initFirebase(mob);
         }
         flag = 0;
     }
@@ -275,10 +276,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void initFirebase() {
+    private void initFirebase(String str) {
         layout1.setEnabled(true);
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReferenceFromUrl("https://tictactoe-b607e.firebaseio.com/" + mob.trim());
+
+        Toast.makeText(this, "grtdb:" + str, Toast.LENGTH_SHORT).show();
+        myRef = database.getReferenceFromUrl("https://tictactoe-b607e.firebaseio.com/" + str.trim());
         resetGame();
         myRef.addValueEventListener(this);
     }
@@ -503,8 +506,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void connectViaMob() {
         final EditText txtMobile = new EditText(this);
+        txtMobile.setInputType(InputType.TYPE_CLASS_PHONE);
         txtMobile.setHint("eg: +919982100000");
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -519,7 +523,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-
+        alertDialogBuilder.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
         alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setIcon(android.R.drawable.ic_menu_edit);
         alertDialogBuilder.setTitle("Connect via Mobile");
@@ -532,6 +541,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         flag = 3;
         player = 2;
+        initFirebase(Constants.friendMob.trim());
         gdb.setGameStatus(1);
         reflectToRTDB(0);
     }
