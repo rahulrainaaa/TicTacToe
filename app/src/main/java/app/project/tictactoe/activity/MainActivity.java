@@ -277,6 +277,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initFirebase(String str) {
+        if (flag == 3) {
+            Log.d("", "");
+        }
         layout1.setEnabled(true);
         database = FirebaseDatabase.getInstance();
 
@@ -539,6 +542,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void Player2Joined() {
 
+        flag = 3;
         flag = 3;
         player = 2;
         initFirebase(Constants.friendMob.trim());
