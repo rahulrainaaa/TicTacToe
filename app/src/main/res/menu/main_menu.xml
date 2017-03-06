@@ -13,16 +13,6 @@
         android:orderInCategory="100"
         android:title="Invite Player"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/menu_action_dial"
-        android:icon="@android:drawable/ic_menu_add"
-        android:orderInCategory="100"
-        android:title="Connect to"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_action_verify"
-        android:icon="@android:drawable/ic_menu_info_details"
-        android:orderInCategory="100"
-        android:title="Verify Number"
-        app:showAsAction="never" />
+
+
 </menu>

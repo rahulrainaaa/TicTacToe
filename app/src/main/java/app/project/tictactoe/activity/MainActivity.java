@@ -1,7 +1,6 @@
 package app.project.tictactoe.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -10,15 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +31,9 @@ import app.project.tictactoe.Utils.Constants;
 import app.project.tictactoe.Utils.GameUtil;
 import app.project.tictactoe.model.GoogleDB;
 
+/**
+ * Class for handing game with QR Code.
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
 
     private ImageView img[][] = new ImageView[3][3];
@@ -93,12 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
 
         vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        s = getSharedPreferences("cache", 0);
-        String mob = s.getString("mob", "0000000000").trim();
-
-        if (mob.contains("0000000000")) {
-            startActivity(new Intent(this, LoginActivity.class));
-        }
         mp = MediaPlayer.create(this, R.raw.ting);
         pwin = MediaPlayer.create(this, R.raw.newgame);
     }
@@ -109,14 +102,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Constants.mainActivity = null;
 
+        s = getSharedPreferences("cache", 0);
         mob = s.getString("mob", "0000000000").trim();
         if (mob.contains("0000000000")) {
-            Toast.makeText(this, "First, verify your mobile number.", Toast.LENGTH_SHORT).show();
-            layout1.setEnabled(false);
+            //    startActivity(new Intent(this, LoginActivity.class));
         } else if (flag == 2) {     // Control from QRScan class.
             player = 2;
             flag = 0;
-            initFirebase(Constants.friendMob);      // Connection to friend.
+            resetGame();
             Toast.makeText(this, "Connected as Player 2", Toast.LENGTH_SHORT).show();
         } else if (flag == 1) {     // Control from QRGen Class.
             player = 1;
@@ -158,13 +151,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, QRGen.class));
                 break;
 
-            case R.id.menu_action_dial:
-                connectViaMob();
-                break;
-
-            case R.id.menu_action_verify:
-                startActivity(new Intent(this, LoginActivity.class));
-                break;
             default:
                 break;
         }
@@ -175,19 +161,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataChange(DataSnapshot dataSnapshot) {
         Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        if (gdb.getGameStatus() == 1) {
-            gdb.setGameStatus(0); //When My (player1) QR is scanned.
-            reflectToRTDB(0);
-            if (Constants.qrGen != null) {
+        if (gdb.getGameStatus() == 1) {     // CASE: Request for new game.
+            gdb.setGameStatus(0); //When My QR (player1) is scanned.
+            if (Constants.qrGen != null) {      //Close the QR Gen activity.
                 Constants.qrGen.closeActivityCallback();
                 return;
             } else if (flag == 0) {
                 Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
                 player = 1;
             }
-            flag = 0;
+            reflectToRTDB(0);
 
-        } else if (gdb.getWon() > -1) {
+        } else if (gdb.getWon() > -1) { //CASE: GAME WON.
             layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
             layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
             switch (gdb.getWon()) {
@@ -276,9 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initFirebase(String str) {
-        if (flag == 3) {
-            Log.d("", "");
-        }
+
         layout1.setEnabled(true);
         database = FirebaseDatabase.getInstance();
 
@@ -362,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return; //Return if not on UI Thread.
         }
 
+        // Continue further for UI work.
         if (gdb.getPlayer() == 1) {
             txtPlayer1.setTextColor(green);
             txtPlayer2.setTextColor(red);
@@ -506,43 +490,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return 0; //Draw
     }
 
-    private void connectViaMob() {
-        final EditText txtMobile = new EditText(this);
-        txtMobile.setInputType(InputType.TYPE_CLASS_PHONE);
-        txtMobile.setHint("eg: +919982100000");
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setPositiveButton("Connect", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //save button is clicked.
-                String connect2Mob = txtMobile.getText().toString().trim();
-                if (connect2Mob.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Enter mobile number with country code.\neg: +917988200000", Toast.LENGTH_SHORT).show();
-                } else {
-                    MainActivity.this.player = 2;
-                    Constants.friendMob = connect2Mob.trim();
-                    Player2Joined();
-                }
-            }
-        });
-        alertDialogBuilder.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setIcon(android.R.drawable.ic_menu_edit);
-        alertDialogBuilder.setTitle("Connect via Mobile");
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.setView(txtMobile);
-        alertDialog.show();
-    }
-
     public void Player2Joined() {
 
-        flag = 3;
-        flag = 3;
         player = 2;
         initFirebase(Constants.friendMob.trim());
         gdb.setGameStatus(1);

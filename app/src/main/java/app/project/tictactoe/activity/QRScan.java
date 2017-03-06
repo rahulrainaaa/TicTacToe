@@ -2,7 +2,6 @@ package app.project.tictactoe.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.google.zxing.Result;
 
@@ -35,9 +34,12 @@ public class QRScan extends AppCompatActivity implements ZXingScannerView.Result
 
     @Override
     public void handleResult(Result rawResult) {
-        Toast.makeText(this, "" + rawResult.getText(), Toast.LENGTH_SHORT).show();
         Constants.friendMob = "" + rawResult.getText().toString().trim();
-        Constants.mainActivity.Player2Joined();
+        if (Constants.mainActivity != null) {
+            Constants.mainActivity.Player2Joined();
+        } else if (Constants.gameActivity != null) {
+            Constants.gameActivity.Player2Joined();
+        }
         finish();
         return;
         //Toast.makeText(this, "" + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_LONG).show();

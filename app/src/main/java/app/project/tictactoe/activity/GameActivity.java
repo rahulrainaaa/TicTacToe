@@ -35,6 +35,9 @@ import app.project.tictactoe.Utils.Constants;
 import app.project.tictactoe.Utils.GameUtil;
 import app.project.tictactoe.model.GoogleDB;
 
+/**
+ * Class for handing game with Mobile Number.
+ */
 public class GameActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
 
     private ImageView img[][] = new ImageView[3][3];
@@ -131,7 +134,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.game_menu, menu);
         return true;
     }
 
@@ -140,30 +143,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         super.onOptionsItemSelected(item);
 
         switch (item.getItemId()) {
-            case R.id.menu_action_scan:
-                ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.CAMERA}, 1);
-                Constants.gameActivity = this;  //required to write in GRTDB.
-                flag = 2;   // Scan and connect as player 2.
-                startActivity(new Intent(this, QRScan.class));
-                break;
-
-            case R.id.menu_action_gen:
-                flag = 1; // gen and act as player 1
-                if (mob.contains("0000000000")) {
-                    Toast.makeText(this, "Verify your mobile number first.", Toast.LENGTH_SHORT).show();
-                    break;
-                }
-                Constants.mob = mob;            // Only for generating QR.
-                startActivity(new Intent(this, QRGen.class));
-                break;
 
             case R.id.menu_action_dial:
                 connectViaMob();
-                break;
-
-            case R.id.menu_action_verify:
-                startActivity(new Intent(this, LoginActivity.class));
                 break;
             default:
                 break;
