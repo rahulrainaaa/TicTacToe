@@ -37,8 +37,6 @@ public class QRScan extends AppCompatActivity implements ZXingScannerView.Result
         Constants.friendMob = "" + rawResult.getText().toString().trim();
         if (Constants.mainActivity != null) {
             Constants.mainActivity.Player2Joined();
-        } else if (Constants.gameActivity != null) {
-            Constants.gameActivity.Player2Joined();
         }
         finish();
         return;

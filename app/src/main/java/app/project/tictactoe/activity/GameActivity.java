@@ -97,7 +97,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         s = getSharedPreferences("cache", 0);
-        String mob = s.getString("mob", "0000000000").trim();
+        mob = s.getString("mob", "0000000000").trim();
 
         if (mob.contains("0000000000")) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -116,16 +116,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         if (mob.contains("0000000000")) {
             Toast.makeText(this, "First, verify your mobile number.", Toast.LENGTH_SHORT).show();
             layout1.setEnabled(false);
-        } else if (flag == 2) {     // Control from QRScan class.
-            player = 2;
-            flag = 0;
-            initFirebase(Constants.friendMob);      // Connection to friend.
-            Toast.makeText(this, "Connected as Player 2", Toast.LENGTH_SHORT).show();
-        } else if (flag == 1) {     // Control from QRGen Class.
-            player = 1;
-            flag = 0;
-            initFirebase(mob);
-            Toast.makeText(this, "Connected as Player 1", Toast.LENGTH_SHORT).show();
         } else {
             initFirebase(mob);
         }
@@ -157,18 +147,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataChange(DataSnapshot dataSnapshot) {
         Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        if (gdb.getGameStatus() == 1) {
+        if (gdb.getGameStatus() == 1 && flag == 1) {
             gdb.setGameStatus(0); //When My (player1) QR is scanned.
-            reflectToRTDB(0);
-            if (Constants.qrGen != null) {
-                Constants.qrGen.closeActivityCallback();
-                return;
-            } else if (flag == 0) {
-                Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
-                player = 1;
-            }
+            Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
+            player = 1;
             flag = 0;
-
+            reflectToRTDB(0);
         } else if (gdb.getWon() > -1) {
             layout1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game1));
             layout2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.next_game2));
@@ -258,9 +242,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initFirebase(String str) {
-        if (flag == 3) {
-            Log.d("", "");
-        }
+
         layout1.setEnabled(true);
         database = FirebaseDatabase.getInstance();
 
@@ -523,8 +505,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     public void Player2Joined() {
 
-        flag = 3;
-        flag = 3;
+        flag = 1;
         player = 2;
         initFirebase(Constants.friendMob.trim());
         gdb.setGameStatus(1);
