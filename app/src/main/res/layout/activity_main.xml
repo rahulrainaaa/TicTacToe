@@ -172,8 +172,8 @@
                         android:text="Player 1"
                         android:textColor="@color/green"
                         android:textSize="20sp"
-                        android:textStyle="italic|normal"
-                        android:typeface="serif" />
+                        android:textStyle="normal|bold"
+                        android:typeface="normal" />
 
                 </LinearLayout>
 
@@ -181,7 +181,7 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="8dp"
                     android:background="#ffffff" />
 
                 <LinearLayout
@@ -204,8 +204,8 @@
                         android:text="Player 2"
                         android:textColor="@color/red"
                         android:textSize="20sp"
-                        android:textStyle="italic|normal"
-                        android:typeface="serif" />
+                        android:textStyle="normal|bold"
+                        android:typeface="normal" />
 
                 </LinearLayout>
 
@@ -214,6 +214,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginTop="3dp"
                 android:background="#ffffff" />
 
         </LinearLayout>
