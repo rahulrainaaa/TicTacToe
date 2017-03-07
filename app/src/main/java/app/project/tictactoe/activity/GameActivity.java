@@ -147,10 +147,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void onDataChange(DataSnapshot dataSnapshot) {
         Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        if (gdb.getGameStatus() == 1 && flag == 1) {
+        if (gdb.getGameStatus() == 1 && flag == 0) {
             gdb.setGameStatus(0); //When My (player1) QR is scanned.
             Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
             player = 1;
+            flag = 0;
+            reflectToRTDB(0);
+        } else if (gdb.getGameStatus() == 1 && flag == 2) {
+            gdb.setGameStatus(0); //When My (player1) QR is scanned.
+            Toast.makeText(this, "Connected as Player 2...", Toast.LENGTH_SHORT).show();
+            player = 2;
             flag = 0;
             reflectToRTDB(0);
         } else if (gdb.getWon() > -1) {
@@ -505,7 +511,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     public void Player2Joined() {
 
-        flag = 1;
+        flag = 2;
         player = 2;
         initFirebase(Constants.friendMob.trim());
         gdb.setGameStatus(1);
