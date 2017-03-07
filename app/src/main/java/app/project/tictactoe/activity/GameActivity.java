@@ -55,6 +55,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private MediaPlayer mp;
     private MediaPlayer pwin;
     private Vibrator vib;
+    private ImageView imgWin, imgLose;
+    private Toast toastWin, toastLose;
+    private int myScore, totalMatch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +107,22 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
         mp = MediaPlayer.create(this, R.raw.ting);
         pwin = MediaPlayer.create(this, R.raw.newgame);
+
+        imgWin = new ImageView(this);
+        imgLose = new ImageView(this);
+        imgWin.setImageResource(R.drawable.win);
+        imgLose.setImageResource(R.drawable.lost);
+
+        toastWin = new Toast(this);
+        toastLose = new Toast(this);
+
+        toastWin.setView(imgWin);
+        //toastWin.setText("Congrats. You Won...!");
+        toastLose.setView(imgLose);
+        //toastLose.setText("Try better in next match.");
+
+        toastWin.setDuration(Toast.LENGTH_SHORT);
+        toastLose.setDuration(Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -119,6 +138,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             initFirebase(mob);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 
     @Override
@@ -145,9 +170,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        if (flag == 0) {
+            Log.w("", "");
+        }
         Log.d("44444444444444", "******************************************************");
         gdb = dataSnapshot.getValue(GoogleDB.class);
-        if (gdb.getGameStatus() == 1 && flag == 0) {
+        if (gdb.getGameStatus() == 1 && flag == 0 & player != 2) {
             gdb.setGameStatus(0); //When My (player1) QR is scanned.
             Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
             player = 1;
@@ -170,12 +198,26 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     vib.vibrate(100);
                     break;
                 case 1:
-                    Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
+                    if (gdb.getPlayer() == player) {
+                        // Toast.makeText(this, "Congratulations, You Won...!", Toast.LENGTH_SHORT).show();
+                        toastWin.show();
+
+                    } else {
+                        toastLose.show();
+                        // Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
+                    }
                     vib.vibrate(300);
+
                     pwin.start();
                     break;
                 case 2:
-                    Toast.makeText(this, "Player 2 Won...!", Toast.LENGTH_SHORT).show();
+                    if (gdb.getPlayer() == player) {
+                        // Toast.makeText(this, "Congratulations, You Won...!", Toast.LENGTH_SHORT).show();
+                        toastWin.show();
+                    } else {
+                        toastLose.show();
+                        // Toast.makeText(this, "Player 2 Won...!", Toast.LENGTH_SHORT).show();
+                    }
                     vib.vibrate(300);
                     pwin.start();
                     break;
@@ -184,10 +226,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         if (gdb.getPlayer() == 1) {
 
+            vib.vibrate(30);
             txtPlayer1.setTextColor(green);
             txtPlayer2.setTextColor(red);
         } else if (gdb.getPlayer() == 2) {
 
+            vib.vibrate(30);
             txtPlayer1.setTextColor(red);
             txtPlayer2.setTextColor(green);
         } else {
