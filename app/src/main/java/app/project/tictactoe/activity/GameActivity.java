@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,7 +42,7 @@ import app.project.tictactoe.model.GoogleDB;
 public class GameActivity extends AppCompatActivity implements View.OnClickListener, ValueEventListener {
 
     private ImageView img[][] = new ImageView[3][3];
-    private TextView txtPlayer1, txtPlayer2;
+    private TextView txtPlayer1, txtPlayer2, txtScore;
     private LinearLayout layout1, layout2;
     private SharedPreferences s;
     private String mob;
@@ -55,9 +56,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private MediaPlayer mp;
     private MediaPlayer pwin;
     private Vibrator vib;
+    private Animation animMark;
     private ImageView imgWin, imgLose;
     private Toast toastWin, toastLose;
-    private int myScore, totalMatch;
+    private int myScore = 0, totalMatch = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
         txtPlayer1 = (TextView) findViewById(R.id.txt_player_1);
         txtPlayer2 = (TextView) findViewById(R.id.txt_player_2);
+        txtScore = (TextView) findViewById(R.id.score);
 
         layout1 = (LinearLayout) findViewById(R.id.activity_main);
         layout2 = (LinearLayout) findViewById(R.id.activity_main1);
@@ -97,6 +100,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         green = Color.GREEN;
         txtPlayer1.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
         txtPlayer2.startAnimation(AnimationUtils.loadAnimation(this, R.anim.appear_player));
+        animMark = AnimationUtils.loadAnimation(this, R.anim.mark_anim);
 
         vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         s = getSharedPreferences("cache", 0);
@@ -337,6 +341,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         if (m == -1) {
             M[x][y] = mark;
             img[x][y].setImageResource(GameUtil.getImgRes(mark));
+            img[x][y].startAnimation(animMark);
             mp.start();
             int p = checkGame();
             gdb.setWon(p);
@@ -390,6 +395,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     private void gameWon(int player) {
 
+        myScore++;
+        txtScore.setText("Score: " + myScore);
         gdb.setWon(player);
         newGame();
 
