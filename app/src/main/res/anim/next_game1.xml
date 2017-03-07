@@ -1,27 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <translate android:fromXDelta="0%"
-        android:toXDelta="100%"
+    <translate
+        android:duration="700"
+        android:fromXDelta="0%"
         android:startOffset="300"
-        android:duration="700"/>
+        android:toXDelta="100%" />
 
-    <translate android:fromXDelta="0%"
-        android:toXDelta="-100%"
+    <translate
+        android:duration="700"
+        android:fromXDelta="0%"
         android:startOffset="1000"
-        android:duration="700"/>
-
-
-
-    <!--<scale-->
-        <!--android:duration="700"-->
-        <!--android:fromXScale="100%"-->
-        <!--android:fromYScale="100%"-->
-        <!--android:interpolator="@android:anim/bounce_interpolator"-->
-        <!--android:pivotX="50%"-->
-        <!--android:pivotY="50%"-->
-        <!--android:startOffset="00"-->
-        <!--android:toXScale="0%"-->
-        <!--android:toYScale="0%" />-->
+        android:toXDelta="-100%" />
 
 </set>

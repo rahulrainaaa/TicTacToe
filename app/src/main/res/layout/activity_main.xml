@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#4d4d4d"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -15,6 +16,7 @@
 
         <LinearLayout
             android:id="@+id/activity_main"
+            android:background="#00767676"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
