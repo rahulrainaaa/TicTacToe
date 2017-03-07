@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="@drawable/bgw">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -151,39 +152,62 @@
                 android:orientation="horizontal"
                 android:weightSum="40">
 
-                <TextView
-                    android:id="@+id/txt_player_1"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="20"
                     android:gravity="center"
-                    android:text="Player 1"
-                    android:textColor="@color/green"
-                    android:textSize="20sp"
-                    android:textStyle="italic|normal"
-                    android:typeface="serif" />
+                    android:orientation="vertical">
 
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/pla" />
+
+                    <TextView
+                        android:id="@+id/txt_player_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Player 1"
+                        android:textColor="@color/green"
+                        android:textSize="20sp"
+                        android:textStyle="italic|normal"
+                        android:typeface="serif" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="1dp"
-                    android:layout_height="30sp"
+                    android:layout_height="match_parent"
                     android:layout_marginBottom="5dp"
                     android:layout_marginTop="5dp"
                     android:background="#ffffff" />
 
-
-                <TextView
-                    android:id="@+id/txt_player_2"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="20"
                     android:gravity="center"
-                    android:text="Player 2"
-                    android:textColor="@color/red"
-                    android:textSize="20sp"
-                    android:textStyle="italic|normal"
-                    android:typeface="serif" />
+                    android:orientation="vertical">
 
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/pla" />
+
+                    <TextView
+                        android:id="@+id/txt_player_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Player 2"
+                        android:textColor="@color/red"
+                        android:textSize="20sp"
+                        android:textStyle="italic|normal"
+                        android:typeface="serif" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

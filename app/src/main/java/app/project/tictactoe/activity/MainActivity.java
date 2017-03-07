@@ -110,11 +110,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             player = 2;
             flag = 0;
             resetGame();
+            txtPlayer1.setText("Player 1");
+            txtPlayer2.setText("Player 2 (You)");
+
             Toast.makeText(this, "Connected as Player 2", Toast.LENGTH_SHORT).show();
         } else if (flag == 1) {     // Control from QRGen Class.
             player = 1;
             flag = 0;
             initFirebase(mob);
+            txtPlayer1.setText("Player 1 (You)");
+            txtPlayer2.setText("Player 2");
             Toast.makeText(this, "Connected as Player 1", Toast.LENGTH_SHORT).show();
         } else {
             initFirebase(mob);
@@ -166,9 +171,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (Constants.qrGen != null) {      //Close the QR Gen activity.
                 Constants.qrGen.closeActivityCallback();
                 return;
-            } else if (flag == 0) {
-                Toast.makeText(this, "Player 2 manually connected with you...", Toast.LENGTH_SHORT).show();
-                player = 1;
             }
             reflectToRTDB(0);
 
@@ -181,12 +183,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     vib.vibrate(100);
                     break;
                 case 1:
-                    Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
+                    if (gdb.getPlayer() == player) {
+                        Toast.makeText(this, "Congratulations, You Won...!", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(this, "Player 1 Won...!", Toast.LENGTH_SHORT).show();
+                    }
                     vib.vibrate(300);
                     pwin.start();
                     break;
                 case 2:
-                    Toast.makeText(this, "Player 2 Won...!", Toast.LENGTH_SHORT).show();
+                    if (gdb.getPlayer() == player   ) {
+                        Toast.makeText(this, "Congratulations, You Won...!", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(this, "Player 2 Won...!", Toast.LENGTH_SHORT).show();
+                    }
                     vib.vibrate(300);
                     pwin.start();
                     break;

@@ -6,7 +6,7 @@
         <item name="android:textColorSecondary">@android:color/darker_gray</item>
         <item name="android:windowBackground">@android:color/darker_gray</item>
         <item name="android:textColorLink">#ff398622</item>
-        <item name="dgts__accentColor">#5079ff</item>
+        <item name="dgts__accentColor">#6085ff</item>
     </style>
 
 
