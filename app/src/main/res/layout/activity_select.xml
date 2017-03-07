@@ -3,29 +3,62 @@
     android:id="@+id/activity_select"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#e7e7e7"
-    android:gravity="center_horizontal"
+    android:background="@drawable/select_screen"
+    android:gravity="center"
     android:orientation="vertical"
-    android:padding="10dp"
-    android:weightSum="2">
+    android:weightSum="12">
 
-
-    <ImageView
-        android:id="@+id/btn_number"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:elevation="50dp"
-        android:paddingRight="70dp"
-        android:src="@drawable/cvm" />
+        android:layout_weight="5"
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/btn_qr"
+        <ImageView
+            android:id="@+id/btn_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="60dp"
+            android:elevation="100dp"
+            android:src="@drawable/cvm" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:elevation="50dp"
-        android:paddingLeft="100dp"
-        android:src="@drawable/cvqr" />
+        android:layout_weight="1.2"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/image_new"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:elevation="150dp"
+            android:layout_marginRight="50dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/cloud" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/btn_qr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="100dp"
+            android:layout_marginRight="10dp"
+            android:elevation="50dp"
+            android:src="@drawable/cvqr" />
+
+    </LinearLayout>
 
 </LinearLayout>
